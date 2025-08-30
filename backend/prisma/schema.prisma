@@ -1,12 +1,3 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 model Video {
   id        Int       @id @default(autoincrement())
   nome      String
@@ -19,18 +10,7 @@ model Video {
   cortes    Corte[]
   transcricoes Transcricao[]
   momentos  Momento[]
-  renders   Render[]
-}
-
-model Momento {
-  id        Int      @id @default(autoincrement())
-  videoId   Int
-  ini       Float
-  fim       Float
-  score     Float
-  tipo      String
-  palavras  String?
-  Video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  // renders   Render[]  // removido (não há relação inversa em Render)
 }
 
 model Corte {
@@ -42,48 +22,17 @@ model Corte {
   legendaOn Boolean  @default(false)
   overlayOn Boolean  @default(true)
   seed      String?
-  parametrosUnicidade Json?
+  parametrosUnicidade String?   // salva JSON como TEXT
   status    String   @default("pendente")
   saida     String?
   Video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   renders   Render[]
-  publicacoes Publicacao[]
-}
-
-model Render {
-  id             Int     @id @default(autoincrement())
-  corteId        Int
-  arquivo        String?
-  hashPerceptual String?
-  status         String   @default("pendente")
-  log            String?
-  Corte          Corte    @relation(fields: [corteId], references: [id], onDelete: Cascade)
-}
-
-model Publicacao {
-  id      Int    @id @default(autoincrement())
-  corteId Int
-  rede    String
-  status  String @default("pendente")
-  url     String?
-  Corte   Corte  @relation(fields: [corteId], references: [id], onDelete: Cascade)
-}
-
-model Job {
-  id          Int      @id @default(autoincrement())
-  tipo        String
-  refId       Int?
-  status      String   @default("pendente")
-  progresso   Int      @default(0)
-  log         String?
-  criadoEm    DateTime @default(now())
-  atualizadoEm DateTime @updatedAt
 }
 
 model Transcricao {
   id      Int     @id @default(autoincrement())
   videoId Int
   texto   String
-  trechos Json?
+  trechos String?   // salva JSON como TEXT
   Video   Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
 }
